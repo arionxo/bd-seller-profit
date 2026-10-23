@@ -1,0 +1,345 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#102b25">
+<title>BD Seller Profit | E-commerce Calculator</title>
+<meta name="description" content="Calculate real e-commerce profit in Bangladesh, including COD fees, delivery, advertising and returns.">
+<style>
+:root {
+  --bg:#f3f6f3; --card:#fff; --ink:#152b25;
+  --muted:#687870; --green:#176b50; --line:#dce5df;
+  --soft:#e7f3ec; --red:#b52c35;
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:system-ui,-apple-system,sans-serif;
+}
+header {
+  background:#102b25; color:white; padding:25px 18px 30px;
+}
+.wrap { max-width:850px; margin:auto; }
+.top { display:flex; justify-content:space-between; gap:12px; align-items:center; }
+.brand { font-size:14px; font-weight:800; letter-spacing:1px; }
+select,button,input { font:inherit; }
+header select {
+  background:#24453b; color:white; border:1px solid #547267;
+  padding:9px; border-radius:10px;
+}
+h1 { font-size:clamp(26px,6vw,38px); line-height:1.15; margin:25px 0 10px; }
+header p { color:#d0e2d8; line-height:1.6; margin:0; }
+main { padding:20px 14px 36px; }
+.card {
+  background:var(--card); border:1px solid var(--line);
+  border-radius:16px; padding:18px; margin-bottom:16px;
+}
+h2 { font-size:18px; margin:0 0 16px; }
+.grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.field { min-width:0; }
+label { display:block; font-size:13px; font-weight:650; margin-bottom:6px; }
+input {
+  width:100%; min-width:0; padding:12px 10px;
+  border:1px solid #cbd8d0; border-radius:10px;
+  background:#fff; color:var(--ink);
+}
+input:focus,select:focus { outline:2px solid #70b99a; outline-offset:1px; }
+.hint { font-size:11px; color:var(--muted); margin-top:5px; line-height:1.45; }
+.results { background:var(--soft); border:1px solid #cce3d5; }
+.eyebrow { font-size:12px; color:var(--muted); font-weight:650; }
+.big { font-size:34px; font-weight:800; letter-spacing:-1px; margin:5px 0; overflow-wrap:anywhere; }
+.sub { font-size:13px; color:var(--muted); }
+.metrics { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:18px; }
+.metric { background:#fff; border:1px solid var(--line); border-radius:12px; padding:13px; min-width:0; }
+.metric strong { display:block; font-size:19px; margin-top:5px; overflow-wrap:anywhere; }
+.negative { color:var(--red)!important; }
+.positive { color:var(--green)!important; }
+.note { font-size:12px; color:var(--muted); line-height:1.6; }
+button {
+  border:0; border-radius:10px; padding:12px 15px;
+  background:var(--green); color:#fff; font-weight:700; cursor:pointer;
+}
+.actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:15px; }
+.secondary { background:#e8eee9; color:var(--ink); }
+footer { text-align:center; padding:5px 14px 28px; color:var(--muted); font-size:12px; }
+@media(max-width:420px) {
+  .grid { gap:11px; }
+  .card { padding:14px; }
+  .big { font-size:29px; }
+  .metric { padding:10px; }
+  .metric strong { font-size:17px; }
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div class="brand">BD SELLER PROFIT</div>
+      <select id="language" aria-label="Language">
+        <option value="en">English</option>
+        <option value="bn">বাংলা</option>
+      </select>
+    </div>
+    <h1 data-i="title">Know your real profit.</h1>
+    <p data-i="subtitle">A practical profit calculator for Bangladesh's online sellers.</p>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="card">
+    <h2 data-i="inputs">Order economics</h2>
+    <div class="grid">
+      <div class="field">
+        <label for="price" data-i="price">Selling price (৳)</label>
+        <input id="price" type="number" min="0" step="any" value="1200">
+      </div>
+      <div class="field">
+        <label for="cost" data-i="cost">Product cost (৳)</label>
+        <input id="cost" type="number" min="0" step="any" value="500">
+      </div>
+      <div class="field">
+        <label for="pack" data-i="pack">Packaging (৳)</label>
+        <input id="pack" type="number" min="0" step="any" value="30">
+      </div>
+      <div class="field">
+        <label for="delivery" data-i="delivery">Courier fee paid by seller (৳)</label>
+        <input id="delivery" type="number" min="0" step="any" value="80">
+      </div>
+      <div class="field">
+        <label for="shipcharge" data-i="shipcharge">Delivery fee collected from customer (৳)</label>
+        <input id="shipcharge" type="number" min="0" step="any" value="60">
+      </div>
+      <div class="field">
+        <label for="cod" data-i="cod">COD fee (% of selling price)</label>
+        <input id="cod" type="number" min="0" max="100" step="any" value="1">
+      </div>
+      <div class="field">
+        <label for="ads" data-i="ads">Ad cost per placed order (৳)</label>
+        <input id="ads" type="number" min="0" step="any" value="150">
+        <div class="hint" data-i="adsHint">Ad spend ÷ all placed orders.</div>
+      </div>
+      <div class="field">
+        <label for="returns" data-i="returns">Return/cancellation rate (%)</label>
+        <input id="returns" type="number" min="0" max="100" step="any" value="15">
+      </div>
+      <div class="field">
+        <label for="returncost" data-i="returncost">Extra loss per returned order (৳)</label>
+        <input id="returncost" type="number" min="0" step="any" value="100">
+        <div class="hint" data-i="returnHint">Include return shipping and non-recoverable costs.</div>
+      </div>
+      <div class="field">
+        <label for="orders" data-i="orders">Placed orders per month</label>
+        <input id="orders" type="number" min="0" step="1" value="100">
+      </div>
+    </div>
+    <div class="actions">
+      <button id="reset" type="button" data-i="reset">Reset example</button>
+    </div>
+  </section>
+
+  <section class="card results" aria-live="polite">
+    <div class="eyebrow" data-i="monthly">Estimated monthly profit</div>
+    <div class="big" id="monthlyProfit">৳37,730</div>
+    <div class="sub" id="monthlySub">Based on 100 placed orders.</div>
+    <div class="metrics">
+      <div class="metric">
+        <div class="eyebrow" data-i="perPlaced">Expected profit / placed order</div>
+        <strong id="perPlaced">৳377.30</strong>
+      </div>
+      <div class="metric">
+        <div class="eyebrow" data-i="perDelivered">Expected profit / delivered order</div>
+        <strong id="perDelivered">৳443.88</strong>
+      </div>
+      <div class="metric">
+        <div class="eyebrow" data-i="margin">Expected profit margin</div>
+        <strong id="margin">35.2%</strong>
+      </div>
+      <div class="metric">
+        <div class="eyebrow" data-i="breakEven">Break-even ad cost / placed order</div>
+        <strong id="breakEven">৳527.30</strong>
+      </div>
+    </div>
+    <p class="note" id="explanation"></p>
+  </section>
+
+  <section class="card">
+    <h2 data-i="assumptions">Calculation assumptions</h2>
+    <p class="note" data-i="assumptionText">
+      Returned products are assumed recoverable. Ad cost is measured per placed
+      order, including returned orders. The extra return loss covers costs not
+      already included in successful-order expenses. Taxes, salaries, damaged
+      inventory and fixed overhead are excluded unless you account for them
+      in your inputs.
+    </p>
+    <div class="actions">
+      <button id="copy" type="button" data-i="copy">Copy results</button>
+      <button id="share" type="button" class="secondary" data-i="share">Share tool</button>
+    </div>
+    <p id="message" class="note" role="status"></p>
+  </section>
+</main>
+<footer>BD Seller Profit · <span data-i="footer">A planning estimate, not an accounting statement.</span></footer>
+
+<script>
+const $ = id => document.getElementById(id);
+
+const defaults = {
+  price:1200, cost:500, pack:30, delivery:80, shipcharge:60,
+  cod:1, ads:150, returns:15, returncost:100, orders:100
+};
+
+const text = {
+en:{
+ title:"Know your real profit.",
+ subtitle:"A practical profit calculator for Bangladesh's online sellers.",
+ inputs:"Order economics", price:"Selling price (৳)", cost:"Product cost (৳)",
+ pack:"Packaging (৳)", delivery:"Courier fee paid by seller (৳)",
+ shipcharge:"Delivery fee collected from customer (৳)",
+ cod:"COD fee (% of selling price)", ads:"Ad cost per placed order (৳)",
+ adsHint:"Ad spend ÷ all placed orders.", returns:"Return/cancellation rate (%)",
+ returncost:"Extra loss per returned order (৳)",
+ returnHint:"Include return shipping and non-recoverable costs.",
+ orders:"Placed orders per month", reset:"Reset example",
+ monthly:"Estimated monthly profit", perPlaced:"Expected profit / placed order",
+ perDelivered:"Expected profit / delivered order", margin:"Expected profit margin",
+ breakEven:"Break-even ad cost / placed order", assumptions:"Calculation assumptions",
+ assumptionText:"Returned products are assumed recoverable. Ad cost is measured per placed order, including returned orders. Extra return loss covers costs not already included in successful-order expenses. Taxes, salaries, damaged inventory and fixed overhead are excluded unless included in your inputs.",
+ copy:"Copy results", share:"Share tool",
+ footer:"A planning estimate, not an accounting statement.",
+ monthlySub:"Based on {n} placed orders.", invalid:"Please enter valid non-negative values. Rates must not exceed 100%.",
+ zero:"No successful deliveries are expected at a 100% return rate.",
+ copied:"Results copied.", copyFail:"Could not copy automatically. Please copy the figures manually.",
+ shared:"Share this link with a seller.", explanation:"Includes expected return losses and advertising. Actual results depend on your courier terms and order data."
+},
+bn:{
+ title:"আপনার প্রকৃত লাভ জানুন।",
+ subtitle:"বাংলাদেশের অনলাইন বিক্রেতাদের জন্য সহজ প্রফিট ক্যালকুলেটর।",
+ inputs:"অর্ডারের হিসাব", price:"বিক্রয়মূল্য (৳)", cost:"পণ্যের ক্রয়মূল্য (৳)",
+ pack:"প্যাকেজিং খরচ (৳)", delivery:"বিক্রেতার দেওয়া কুরিয়ার খরচ (৳)",
+ shipcharge:"ক্রেতার কাছ থেকে নেওয়া ডেলিভারি চার্জ (৳)",
+ cod:"COD ফি (বিক্রয়মূল্যের %)", ads:"প্রতি অর্ডারে বিজ্ঞাপন খরচ (৳)",
+ adsHint:"মোট বিজ্ঞাপন খরচ ÷ মোট প্লেসড অর্ডার।",
+ returns:"রিটার্ন/বাতিলের হার (%)",
+ returncost:"প্রতি রিটার্নে অতিরিক্ত ক্ষতি (৳)",
+ returnHint:"রিটার্ন ডেলিভারি ও ফেরত না-পাওয়া খরচ যোগ করুন।",
+ orders:"প্রতি মাসে প্লেসড অর্ডার", reset:"উদাহরণ রিসেট করুন",
+ monthly:"আনুমানিক মাসিক লাভ", perPlaced:"প্রতি প্লেসড অর্ডারে প্রত্যাশিত লাভ",
+ perDelivered:"প্রতি ডেলিভারিতে প্রত্যাশিত লাভ", margin:"প্রত্যাশিত লাভের হার",
+ breakEven:"প্রতি অর্ডারে সর্বোচ্চ ব্রেক-ইভেন বিজ্ঞাপন খরচ",
+ assumptions:"হিসাবের শর্ত", 
+ assumptionText:"ধরা হয়েছে রিটার্ন হওয়া পণ্য পুনরায় বিক্রি করা যাবে। বিজ্ঞাপন খরচ সব প্লেসড অর্ডারের হিসাবে ধরা হয়েছে। অতিরিক্ত রিটার্ন ক্ষতিতে সফল অর্ডারের খরচে আগে ধরা হয়নি এমন খরচ অন্তর্ভুক্ত করুন। ইনপুটে যোগ না করলে কর, বেতন, নষ্ট পণ্য ও স্থায়ী খরচ ধরা হয়নি।",
+ copy:"হিসাব কপি করুন", share:"টুল শেয়ার করুন",
+ footer:"এটি পরিকল্পনার আনুমানিক হিসাব, হিসাবরক্ষণ বিবরণী নয়।",
+ monthlySub:"{n}টি প্লেসড অর্ডারের ভিত্তিতে।",
+ invalid:"সঠিক শূন্য বা তার বেশি মান দিন। হার ১০০%-এর বেশি হতে পারবে না।",
+ zero:"রিটার্নের হার ১০০% হলে সফল ডেলিভারি প্রত্যাশিত নয়।",
+ copied:"হিসাব কপি হয়েছে।", copyFail:"স্বয়ংক্রিয় কপি হয়নি। ফলাফল হাতে কপি করুন।",
+ shared:"এই লিংকটি বিক্রেতার সঙ্গে শেয়ার করুন।",
+ explanation:"রিটার্নের সম্ভাব্য ক্ষতি ও বিজ্ঞাপন খরচ অন্তর্ভুক্ত। প্রকৃত ফল কুরিয়ারের শর্ত ও অর্ডারের তথ্যের ওপর নির্ভর করে।"
+}
+};
+
+let lang = "en";
+const ids = Object.keys(defaults);
+const money = n => "৳" + n.toLocaleString(lang==="bn"?"bn-BD":"en-BD",{
+  minimumFractionDigits:2,maximumFractionDigits:2
+});
+function num(id){ return Number($(id).value); }
+
+function calculate(){
+  const v = {};
+  ids.forEach(id => v[id] = num(id));
+  const ratesValid = v.cod <= 100 && v.returns <= 100;
+  const valid = ids.every(id => Number.isFinite(v[id]) && v[id]>=0)
+    && ratesValid && Number.isInteger(v.orders);
+  const msg = $("message");
+  msg.textContent = "";
+  if(!valid){
+    $("monthlyProfit").textContent = "—";
+    $("perPlaced").textContent = "—";
+    $("perDelivered").textContent = "—";
+    $("margin").textContent = "—";
+    $("breakEven").textContent = "—";
+    msg.textContent = text[lang].invalid;
+    return;
+  }
+
+  const success = 1 - v.returns/100;
+  const codFee = v.price*v.cod/100;
+  const revenue = v.price + v.shipcharge;
+  const successfulMargin = revenue-v.cost-v.pack-v.delivery-codFee;
+  const breakEvenAds = success*successfulMargin
+    -(1-success)*v.returncost;
+  const perOrder = breakEvenAds-v.ads;
+  const perDelivered = success>0 ? perOrder/success : null;
+  const monthly = perOrder*v.orders;
+  const expectedRevenue = success*revenue;
+  const margin = expectedRevenue>0 ? perOrder/expectedRevenue*100 : null;
+
+  $("monthlyProfit").textContent = money(monthly);
+  $("perPlaced").textContent = money(perOrder);
+  $("perDelivered").textContent = perDelivered===null ? "—" : money(perDelivered);
+  $("margin").textContent = margin===null ? "—" :
+    margin.toLocaleString(lang==="bn"?"bn-BD":"en-BD",{maximumFractionDigits:1})+"%";
+  $("breakEven").textContent = money(breakEvenAds);
+  $("monthlySub").textContent = text[lang].monthlySub.replace(
+    "{n}",v.orders.toLocaleString(lang==="bn"?"bn-BD":"en-BD")
+  );
+  $("explanation").textContent = text[lang].explanation;
+  ["monthlyProfit","perPlaced","perDelivered","margin","breakEven"].forEach(id=>{
+    $(id).classList.toggle("negative",
+      $(id).textContent.startsWith("-") || (id==="margin" && margin!==null && margin<0)
+    );
+  });
+  if(success===0) msg.textContent = text[lang].zero;
+}
+
+function setLanguage(value){
+  lang=value;
+  document.documentElement.lang=value==="bn"?"bn":"en";
+  document.querySelectorAll("[data-i]").forEach(el=>{
+    const key=el.dataset.i;
+    if(text[lang][key]) el.textContent=text[lang][key];
+  });
+  calculate();
+}
+
+ids.forEach(id=>$(id).addEventListener("input",calculate));
+$("language").addEventListener("change",e=>setLanguage(e.target.value));
+$("reset").addEventListener("click",()=>{
+  ids.forEach(id=>$(id).value=defaults[id]);
+  calculate();
+});
+$("copy").addEventListener("click",async()=>{
+  const result=[
+    $("monthlyProfit").textContent,
+    $("perPlaced").textContent,
+    $("perDelivered").textContent,
+    $("margin").textContent,
+    $("breakEven").textContent
+  ].join("\n");
+  try{
+    await navigator.clipboard.writeText(result);
+    $("message").textContent=text[lang].copied;
+  }catch(e){
+    $("message").textContent=text[lang].copyFail+"\n"+result;
+  }
+});
+$("share").addEventListener("click",async()=>{
+  try{
+    if(navigator.share) await navigator.share({title:document.title,url:location.href});
+    else {
+      await navigator.clipboard.writeText(location.href);
+      $("message").textContent=text[lang].copied;
+    }
+  }catch(e){
+    if(e.name!=="AbortError") $("message").textContent=text[lang].shared;
+  }
+});
+calculate();
+</script>
+</body>
+</html>
