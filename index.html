@@ -174,12 +174,12 @@ footer { text-align:center; padding:5px 14px 28px; color:var(--muted); font-size
         <strong id="placedOrders">100</strong>
       </div>
       <div class="metric">
-        <div class="eyebrow" data-i="deliveredOrders">Expected delivered orders</div>
-        <strong id="deliveredOrders">85</strong>
+        <div class="eyebrow" data-i="deliveredOrders">Expected delivered orders (est.)</div>
+        <strong id="deliveredOrders">≈85</strong>
       </div>
       <div class="metric">
-        <div class="eyebrow" data-i="returnedOrders">Expected returns/cancellations</div>
-        <strong id="returnedOrders">15</strong>
+        <div class="eyebrow" data-i="returnedOrders">Expected returns/cancellations (est.)</div>
+        <strong id="returnedOrders">≈15</strong>
       </div>
       <div class="metric">
         <div class="eyebrow" data-i="adSpend">Monthly advertising spend</div>
@@ -235,7 +235,7 @@ en:{
  breakEven:"Break-even ad cost / placed order", assumptions:"Calculation assumptions",
  assumptionText:"Returned products are assumed recoverable. Ad cost is measured per placed order, including returned orders. Extra return loss covers costs not already included in successful-order expenses. Taxes, salaries, damaged inventory and fixed overhead are excluded unless included in your inputs.",
  outcome:"Order outcome breakdown", placedOrders:"Total placed orders",
- deliveredOrders:"Expected delivered orders", returnedOrders:"Expected returns/cancellations",
+ deliveredOrders:"Expected delivered orders (est.)", returnedOrders:"Expected returns/cancellations (est.)",
  adSpend:"Monthly advertising spend", breakEvenBudget:"Break-even monthly advertising budget",
  copy:"Copy results", share:"Share tool",
  footer:"A planning estimate, not an accounting statement.",
@@ -262,7 +262,7 @@ bn:{
  assumptions:"হিসাবের শর্ত", 
  assumptionText:"ধরা হয়েছে রিটার্ন হওয়া পণ্য পুনরায় বিক্রি করা যাবে। বিজ্ঞাপন খরচ সব প্লেসড অর্ডারের হিসাবে ধরা হয়েছে। অতিরিক্ত রিটার্ন ক্ষতিতে সফল অর্ডারের খরচে আগে ধরা হয়নি এমন খরচ অন্তর্ভুক্ত করুন। ইনপুটে যোগ না করলে কর, বেতন, নষ্ট পণ্য ও স্থায়ী খরচ ধরা হয়নি।",
  outcome:"অর্ডারের ফলাফলের বিবরণ", placedOrders:"মোট প্লেসড অর্ডার",
- deliveredOrders:"প্রত্যাশিত ডেলিভারি হওয়া অর্ডার", returnedOrders:"প্রত্যাশিত রিটার্ন/বাতিল",
+ deliveredOrders:"আনুমানিক ডেলিভারি হওয়া অর্ডার", returnedOrders:"আনুমানিক রিটার্ন/বাতিল",
  adSpend:"মাসিক বিজ্ঞাপন খরচ", breakEvenBudget:"মাসিক ব্রেক-ইভেন বিজ্ঞাপন বাজেট",
  copy:"হিসাব কপি করুন", share:"টুল শেয়ার করুন",
  footer:"এটি পরিকল্পনার আনুমানিক হিসাব, হিসাবরক্ষণ বিবরণী নয়।",
@@ -333,8 +333,10 @@ function calculate(){
     );
   });
   $("placedOrders").textContent = count(v.orders);
-  $("deliveredOrders").textContent = count(v.orders*success);
-  $("returnedOrders").textContent = count(v.orders*v.returns/100);
+  // Display-only rounding; returns derived so delivered + returns = placed orders.
+  const deliveredShown = Math.round(v.orders*success);
+  $("deliveredOrders").textContent = "≈" + count(deliveredShown);
+  $("returnedOrders").textContent = "≈" + count(v.orders - deliveredShown);
   $("adSpend").textContent = moneyWhole(v.ads*v.orders);
   $("breakEvenBudget").textContent = moneyWhole(breakEvenAds*v.orders);
   $("breakEvenBudget").classList.toggle("negative", breakEvenAds*v.orders < -0.5);
@@ -363,7 +365,8 @@ $("copy").addEventListener("click",async()=>{
     $("perPlaced").textContent,
     $("perDelivered").textContent,
     $("margin").textContent,
-    $("breakEven").textContent
+    $("breakEven").textContent,
+    ...outcomeIds.map(id => text[lang][id] + ": " + $(id).textContent)
   ].join("\n");
   try{
     await navigator.clipboard.writeText(result);
