@@ -54,6 +54,7 @@ input:focus,select:focus { outline:2px solid #70b99a; outline-offset:1px; }
 .metrics { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:18px; }
 .metric { background:#fff; border:1px solid var(--line); border-radius:12px; padding:13px; min-width:0; }
 .metric strong { display:block; font-size:19px; margin-top:5px; overflow-wrap:anywhere; }
+.outcome { margin-top:0; }
 .negative { color:var(--red)!important; }
 .positive { color:var(--green)!important; }
 .note { font-size:12px; color:var(--muted); line-height:1.6; }
@@ -166,6 +167,32 @@ footer { text-align:center; padding:5px 14px 28px; color:var(--muted); font-size
   </section>
 
   <section class="card">
+    <h2 data-i="outcome">Order outcome breakdown</h2>
+    <div class="metrics outcome">
+      <div class="metric">
+        <div class="eyebrow" data-i="placedOrders">Total placed orders</div>
+        <strong id="placedOrders">100</strong>
+      </div>
+      <div class="metric">
+        <div class="eyebrow" data-i="deliveredOrders">Expected delivered orders</div>
+        <strong id="deliveredOrders">85</strong>
+      </div>
+      <div class="metric">
+        <div class="eyebrow" data-i="returnedOrders">Expected returns/cancellations</div>
+        <strong id="returnedOrders">15</strong>
+      </div>
+      <div class="metric">
+        <div class="eyebrow" data-i="adSpend">Monthly advertising spend</div>
+        <strong id="adSpend">৳15,000</strong>
+      </div>
+      <div class="metric">
+        <div class="eyebrow" data-i="breakEvenBudget">Break-even monthly advertising budget</div>
+        <strong id="breakEvenBudget">৳52,730</strong>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
     <h2 data-i="assumptions">Calculation assumptions</h2>
     <p class="note" data-i="assumptionText">
       Returned products are assumed recoverable. Ad cost is measured per placed
@@ -207,6 +234,9 @@ en:{
  perDelivered:"Expected profit / delivered order", margin:"Expected profit margin",
  breakEven:"Break-even ad cost / placed order", assumptions:"Calculation assumptions",
  assumptionText:"Returned products are assumed recoverable. Ad cost is measured per placed order, including returned orders. Extra return loss covers costs not already included in successful-order expenses. Taxes, salaries, damaged inventory and fixed overhead are excluded unless included in your inputs.",
+ outcome:"Order outcome breakdown", placedOrders:"Total placed orders",
+ deliveredOrders:"Expected delivered orders", returnedOrders:"Expected returns/cancellations",
+ adSpend:"Monthly advertising spend", breakEvenBudget:"Break-even monthly advertising budget",
  copy:"Copy results", share:"Share tool",
  footer:"A planning estimate, not an accounting statement.",
  monthlySub:"Based on {n} placed orders.", invalid:"Please enter valid non-negative values. Rates must not exceed 100%.",
@@ -231,6 +261,9 @@ bn:{
  breakEven:"প্রতি অর্ডারে সর্বোচ্চ ব্রেক-ইভেন বিজ্ঞাপন খরচ",
  assumptions:"হিসাবের শর্ত", 
  assumptionText:"ধরা হয়েছে রিটার্ন হওয়া পণ্য পুনরায় বিক্রি করা যাবে। বিজ্ঞাপন খরচ সব প্লেসড অর্ডারের হিসাবে ধরা হয়েছে। অতিরিক্ত রিটার্ন ক্ষতিতে সফল অর্ডারের খরচে আগে ধরা হয়নি এমন খরচ অন্তর্ভুক্ত করুন। ইনপুটে যোগ না করলে কর, বেতন, নষ্ট পণ্য ও স্থায়ী খরচ ধরা হয়নি।",
+ outcome:"অর্ডারের ফলাফলের বিবরণ", placedOrders:"মোট প্লেসড অর্ডার",
+ deliveredOrders:"প্রত্যাশিত ডেলিভারি হওয়া অর্ডার", returnedOrders:"প্রত্যাশিত রিটার্ন/বাতিল",
+ adSpend:"মাসিক বিজ্ঞাপন খরচ", breakEvenBudget:"মাসিক ব্রেক-ইভেন বিজ্ঞাপন বাজেট",
  copy:"হিসাব কপি করুন", share:"টুল শেয়ার করুন",
  footer:"এটি পরিকল্পনার আনুমানিক হিসাব, হিসাবরক্ষণ বিবরণী নয়।",
  monthlySub:"{n}টি প্লেসড অর্ডারের ভিত্তিতে।",
@@ -247,6 +280,10 @@ const ids = Object.keys(defaults);
 const money = n => "৳" + n.toLocaleString(lang==="bn"?"bn-BD":"en-BD",{
   minimumFractionDigits:2,maximumFractionDigits:2
 });
+const loc = () => lang==="bn"?"bn-BD":"en-BD";
+const count = n => n.toLocaleString(loc(),{maximumFractionDigits:1});
+const moneyWhole = n => "৳" + (Math.round(n)||0).toLocaleString(loc(),{maximumFractionDigits:0});
+const outcomeIds = ["placedOrders","deliveredOrders","returnedOrders","adSpend","breakEvenBudget"];
 function num(id){ return Number($(id).value); }
 
 function calculate(){
@@ -263,6 +300,7 @@ function calculate(){
     $("perDelivered").textContent = "—";
     $("margin").textContent = "—";
     $("breakEven").textContent = "—";
+    outcomeIds.forEach(id => { $(id).textContent = "—"; $(id).classList.remove("negative"); });
     msg.textContent = text[lang].invalid;
     return;
   }
@@ -294,6 +332,12 @@ function calculate(){
       $(id).textContent.startsWith("-") || (id==="margin" && margin!==null && margin<0)
     );
   });
+  $("placedOrders").textContent = count(v.orders);
+  $("deliveredOrders").textContent = count(v.orders*success);
+  $("returnedOrders").textContent = count(v.orders*v.returns/100);
+  $("adSpend").textContent = moneyWhole(v.ads*v.orders);
+  $("breakEvenBudget").textContent = moneyWhole(breakEvenAds*v.orders);
+  $("breakEvenBudget").classList.toggle("negative", breakEvenAds*v.orders < -0.5);
   if(success===0) msg.textContent = text[lang].zero;
 }
 
