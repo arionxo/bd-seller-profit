@@ -1,0 +1,30 @@
+:root{--bg:#f3f6f3;--card:#fff;--ink:#152b25;--muted:#687870;--green:#176b50;--line:#dce5df;--soft:#e7f3ec}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,sans-serif;line-height:1.65}
+header{background:#102b25;color:#fff;padding:20px 18px}
+.wrap{max-width:850px;margin:auto}
+.top{display:flex;justify-content:space-between;gap:12px;align-items:center}
+.brand{font-size:14px;font-weight:800;letter-spacing:1px;color:#fff;text-decoration:none}
+select{font:inherit;background:#24453b;color:#fff;border:1px solid #547267;padding:9px;border-radius:10px}
+select:focus,a:focus-visible{outline:2px solid #70b99a;outline-offset:2px}
+main{padding:20px 14px 36px}
+article{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+h1{font-size:clamp(24px,5.5vw,34px);line-height:1.2;margin:0 0 14px}
+h2{font-size:19px;margin:26px 0 8px}
+a{color:var(--green)}
+.note{font-size:13px;color:var(--muted)}
+.contact{font-size:19px;font-weight:700;overflow-wrap:anywhere}
+.crumb{font-size:13px;margin:0 0 12px}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:14px;display:block;overflow-x:auto}
+th,td{border:1px solid var(--line);padding:8px;text-align:left;vertical-align:top}
+th{background:var(--soft)}
+.guide-list{list-style:none;padding:0}
+.guide-list li{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin:10px 0;background:var(--soft)}
+.guide-list a{font-weight:700}
+.cta{display:inline-block;margin-top:18px;background:var(--green);color:#fff;padding:11px 15px;border-radius:10px;text-decoration:none;font-weight:700}
+html:not(.bn) [data-lang=bn],html.bn [data-lang=en]{display:none}
+.site-footer{text-align:center;padding:5px 14px 28px;color:var(--muted);font-size:12px}
+.site-footer nav{display:flex;flex-wrap:wrap;justify-content:center;gap:4px 6px;margin-bottom:10px}
+.site-footer nav a{color:var(--green);font-size:14px;font-weight:600;padding:8px 10px;text-decoration:none}
+.site-footer nav a:hover{text-decoration:underline}
+@media(max-width:420px){article{padding:16px}}

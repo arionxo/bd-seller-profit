@@ -7,6 +7,7 @@
 <meta name="theme-color" content="#102b25">
 <title>BD Seller Profit | E-commerce Calculator</title>
 <meta name="description" content="Calculate real e-commerce profit in Bangladesh, including COD fees, delivery, advertising and returns.">
+<link rel="canonical" href="https://bdsellerprofit.xyz/">
 <style>
 :root {
   --bg:#f3f6f3; --card:#fff; --ink:#152b25;
@@ -65,6 +66,10 @@ button {
 .actions { display:flex; flex-wrap:wrap; gap:9px; margin-top:15px; }
 .secondary { background:#e8eee9; color:var(--ink); }
 footer { text-align:center; padding:5px 14px 28px; color:var(--muted); font-size:12px; }
+.footer-nav { display:flex; flex-wrap:wrap; justify-content:center; gap:4px 6px; margin-bottom:10px; }
+.footer-nav a { color:var(--green); font-size:14px; font-weight:600; padding:8px 10px; text-decoration:none; }
+.footer-nav a:hover { text-decoration:underline; }
+.footer-nav a:focus-visible { outline:2px solid #70b99a; outline-offset:2px; }
 @media(max-width:420px) {
   .grid { gap:11px; }
   .card { padding:14px; }
@@ -208,7 +213,11 @@ footer { text-align:center; padding:5px 14px 28px; color:var(--muted); font-size
     <p id="message" class="note" role="status"></p>
   </section>
 </main>
-<footer>BD Seller Profit · <span data-i="footer">A planning estimate, not an accounting statement.</span></footer>
+<footer>
+<nav class="footer-nav" aria-label="Footer">
+  <a href="./" data-i="navHome">Calculator</a><a href="guides/" data-i="navGuides">Guides</a><a href="about.html" data-i="navAbout">About</a><a href="contact.html" data-i="navContact">Contact</a><a href="privacy.html" data-i="navPrivacy">Privacy Policy</a>
+</nav>
+BD Seller Profit · <span data-i="footer">A planning estimate, not an accounting statement.</span></footer>
 
 <script>
 const $ = id => document.getElementById(id);
@@ -239,6 +248,7 @@ en:{
  adSpend:"Monthly advertising spend", breakEvenBudget:"Break-even monthly advertising budget",
  copy:"Copy results", share:"Share tool",
  footer:"A planning estimate, not an accounting statement.",
+ navHome:"Calculator", navGuides:"Guides", navAbout:"About", navContact:"Contact", navPrivacy:"Privacy Policy",
  monthlySub:"Based on {n} placed orders.", invalid:"Please enter valid non-negative values. Rates must not exceed 100%.",
  zero:"No successful deliveries are expected at a 100% return rate.",
  copied:"Results copied.", copyFail:"Could not copy automatically. Please copy the figures manually.",
@@ -266,6 +276,7 @@ bn:{
  adSpend:"মাসিক বিজ্ঞাপন খরচ", breakEvenBudget:"মাসিক ব্রেক-ইভেন বিজ্ঞাপন বাজেট",
  copy:"হিসাব কপি করুন", share:"টুল শেয়ার করুন",
  footer:"এটি পরিকল্পনার আনুমানিক হিসাব, হিসাবরক্ষণ বিবরণী নয়।",
+ navHome:"ক্যালকুলেটর", navGuides:"গাইড", navAbout:"আমাদের সম্পর্কে", navContact:"যোগাযোগ", navPrivacy:"গোপনীয়তা নীতি",
  monthlySub:"{n}টি প্লেসড অর্ডারের ভিত্তিতে।",
  invalid:"সঠিক শূন্য বা তার বেশি মান দিন। হার ১০০%-এর বেশি হতে পারবে না।",
  zero:"রিটার্নের হার ১০০% হলে সফল ডেলিভারি প্রত্যাশিত নয়।",
@@ -387,6 +398,24 @@ $("share").addEventListener("click",async()=>{
   }
 });
 calculate();
+
+// Language via URL only (?lang=bn); keeps footer links in the same language. No storage.
+function syncLangUrl(){
+  const withLang = href => {
+    const u = new URL(href, location.href);
+    if(lang==="bn") u.searchParams.set("lang","bn"); else u.searchParams.delete("lang");
+    return u.href;
+  };
+  document.querySelectorAll(".footer-nav a").forEach(a=>a.setAttribute("href",withLang(a.getAttribute("href"))));
+  const h = withLang(location.href);
+  if(h!==location.href) history.replaceState(null,"",h);
+}
+$("language").addEventListener("change",syncLangUrl);
+if(new URLSearchParams(location.search).get("lang")==="bn"){
+  $("language").value="bn";
+  setLanguage("bn");
+}
+syncLangUrl();
 </script>
 </body>
 </html>
